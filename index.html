@@ -4,6 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aplicacions de la IA</title>
+    <base href="./">
+    <script>
+      // Interceptar cargas de imágenes y corregir rutas
+      const originalFetch = window.fetch;
+      window.fetch = function(url, options) {
+        if (typeof url === 'string' && url.startsWith('/')) {
+          url = '.' + url;
+        }
+        return originalFetch(url, options);
+      };
+      
+      // Interceptar creación de imágenes
+      const originalImageSrc = Object.getOwnPropertyDescriptor(Image.prototype, 'src');
+      Object.defineProperty(Image.prototype, 'src', {
+        set: function(value) {
+          if (value.startsWith('/')) {
+            value = '.' + value;
+          }
+          originalImageSrc.set.call(this, value);
+        },
+        get: originalImageSrc.get
+      });
+    </script>
     <style>
       * { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important; }
     </style>
