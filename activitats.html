@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activitats Interactives – IA: Aplicacions i Impacte</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f4ff;
+  --surface:#ffffff;
+  --primary:#1a3a6e;
+  --accent:#3b82f6;
+  --accent2:#06b6d4;
+  --ok:#16a34a;
+  --ok-bg:#dcfce7;
+  --err:#dc2626;
+  --err-bg:#fee2e2;
+  --warn:#d97706;
+  --warn-bg:#fef3c7;
+  --text:#1e293b;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --radius:12px;
+  --shadow:0 2px 12px rgba(30,41,59,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#1a3a6e 0%,#1e5799 60%,#06b6d4 100%);color:#fff;padding:2rem 1.5rem 3rem;position:relative;overflow:hidden}
+header::after{content:'';position:absolute;bottom:-30px;left:0;right:0;height:60px;background:var(--bg);border-radius:50% 50% 0 0/100% 100% 0 0}
+header h1{font-family:'Syne',sans-serif;font-size:clamp(1.4rem,4vw,2.2rem);font-weight:800;letter-spacing:-.02em}
+header p{font-size:.95rem;opacity:.85;margin-top:.4rem;font-weight:300}
+.badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:.2rem .8rem;font-size:.78rem;font-family:'Syne',sans-serif;font-weight:600;margin-bottom:.8rem;letter-spacing:.04em}
+
+/* NAV */
+nav{background:var(--surface);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:100;padding:.5rem 1rem;overflow-x:auto;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.nav-btn{display:inline-block;padding:.45rem 1rem;border-radius:20px;border:1.5px solid var(--border);font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;background:none;color:var(--muted);margin-right:.4rem;transition:all .2s;white-space:nowrap}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:#eff6ff}
+.nav-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.nav-btn.done{border-color:var(--ok);color:var(--ok)}
+.nav-btn.done.active{background:var(--ok);border-color:var(--ok);color:#fff}
+
+/* LAYOUT */
+main{max-width:820px;margin:0 auto;padding:2rem 1rem 4rem}
+.section-header{margin-bottom:1.5rem}
+.section-header h2{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;color:var(--primary)}
+.section-header p{color:var(--muted);font-size:.9rem;margin-top:.3rem}
+.section-panel{display:none}
+.section-panel.active{display:block}
+
+/* ACTIVITY CARD */
+.act-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.4rem;margin-bottom:1.2rem;box-shadow:var(--shadow);transition:border-color .2s}
+.act-card:hover{border-color:#cbd5e1}
+.act-header{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}
+.act-num{width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.act-type{font-size:.72rem;font-family:'Syne',sans-serif;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--accent2);background:#ecfeff;border:1px solid #a5f3fc;padding:.15rem .55rem;border-radius:10px}
+.act-q{font-size:.98rem;font-weight:500;line-height:1.5;margin-bottom:1rem}
+
+/* MCQ */
+.mcq-opts{display:grid;gap:.5rem}
+.mcq-opt{display:flex;align-items:flex-start;gap:.7rem;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .18s;user-select:none}
+.mcq-opt:hover{border-color:var(--accent);background:#eff6ff}
+.mcq-opt.selected{border-color:var(--accent);background:#eff6ff}
+.mcq-opt.correct{border-color:var(--ok);background:var(--ok-bg)!important}
+.mcq-opt.wrong{border-color:var(--err);background:var(--err-bg)!important}
+.mcq-opt.reveal-correct{border-color:var(--ok);background:var(--ok-bg)!important;opacity:.7}
+.opt-key{min-width:22px;height:22px;border-radius:50%;border:1.5px solid var(--muted);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;font-family:'Syne',sans-serif;flex-shrink:0;transition:all .18s}
+.mcq-opt.selected .opt-key{border-color:var(--accent);background:var(--accent);color:#fff}
+.mcq-opt.correct .opt-key{border-color:var(--ok);background:var(--ok);color:#fff}
+.mcq-opt.wrong .opt-key{border-color:var(--err);background:var(--err);color:#fff}
+.mcq-opt.reveal-correct .opt-key{border-color:var(--ok);background:var(--ok);color:#fff}
+
+/* T/F */
+.tf-btns{display:flex;gap:.8rem}
+.tf-btn{flex:1;padding:.75rem;border-radius:8px;border:2px solid var(--border);font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;background:none;transition:all .2s;color:var(--text)}
+.tf-btn[data-val="true"]:hover{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.tf-btn[data-val="false"]:hover{border-color:var(--err);background:var(--err-bg);color:var(--err)}
+.tf-btn.selected-true{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.tf-btn.selected-false{border-color:var(--err);background:var(--err-bg);color:var(--err)}
+.tf-btn.correct{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.tf-btn.wrong{border-color:var(--err);background:var(--err-bg);color:var(--err)}
+
+/* MATCH */
+.match-wrap{display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1rem}
+.match-col{display:grid;gap:.5rem}
+.match-item{padding:.6rem .8rem;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:.87rem;line-height:1.4;transition:all .18s;user-select:none}
+.match-item:hover{border-color:var(--accent);background:#eff6ff}
+.match-item.selected{border-color:var(--accent);background:#dbeafe;font-weight:500}
+.match-item.paired-ok{border-color:var(--ok);background:var(--ok-bg);cursor:default}
+.match-item.paired-err{border-color:var(--err);background:var(--err-bg);animation:shake .3s}
+.match-item.dim{opacity:.45;cursor:default}
+.match-label{font-size:.7rem;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;letter-spacing:.05em}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* FILL */
+.fill-text{font-size:.97rem;line-height:2;background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:.5rem}
+.fill-input{border:none;border-bottom:2px solid var(--accent);background:transparent;font-family:'DM Sans',sans-serif;font-size:.95rem;color:var(--primary);width:100px;outline:none;text-align:center;padding:.1rem .2rem}
+.fill-input.ok{border-color:var(--ok);color:var(--ok);background:rgba(22,163,74,.08)}
+.fill-input.err{border-color:var(--err);color:var(--err);background:rgba(220,38,38,.08)}
+
+/* ORDER */
+.order-list{display:grid;gap:.45rem;list-style:none}
+.order-item{display:flex;align-items:center;gap:.7rem;padding:.65rem .9rem;background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;cursor:grab;transition:all .18s}
+.order-item.dragging{opacity:.5;cursor:grabbing}
+.order-item.correct{border-color:var(--ok);background:var(--ok-bg)}
+.order-item.wrong{border-color:var(--err);background:var(--err-bg)}
+.drag-handle{color:var(--muted);font-size:1rem;cursor:grab;flex-shrink:0}
+.order-text{font-size:.88rem;flex:1;line-height:1.4}
+.order-arrows{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.arr-btn{background:none;border:1px solid var(--border);border-radius:4px;width:22px;height:18px;cursor:pointer;font-size:.65rem;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .15s}
+.arr-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* FEEDBACK */
+.feedback{margin-top:.9rem;padding:.65rem 1rem;border-radius:8px;font-size:.88rem;line-height:1.5;display:none}
+.feedback.ok{background:var(--ok-bg);color:#15803d;border:1px solid #86efac;display:block}
+.feedback.err{background:var(--err-bg);color:#b91c1c;border:1px solid #fca5a5;display:block}
+.feedback.warn{background:var(--warn-bg);color:#92400e;border:1px solid #fcd34d;display:block}
+.feedback strong{font-weight:600}
+
+/* BUTTONS */
+.check-btn{margin-top:1rem;padding:.55rem 1.4rem;background:var(--primary);color:#fff;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s}
+.check-btn:hover{background:#1e4d8e;transform:translateY(-1px)}
+.check-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.reset-btn{margin-top:.5rem;margin-left:.6rem;padding:.55rem 1rem;background:none;border:1.5px solid var(--border);color:var(--muted);border-radius:8px;font-family:'Syne',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+.reset-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* PROGRESS */
+.progress-bar-wrap{background:#e2e8f0;border-radius:10px;height:6px;margin-bottom:1.5rem;overflow:hidden}
+.progress-bar{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s ease}
+
+/* SCORE BADGE */
+.score-badge{display:inline-flex;align-items:center;gap:.4rem;font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;padding:.3rem .8rem;border-radius:20px;background:#f1f5f9;border:1.5px solid var(--border);color:var(--muted);margin-bottom:1rem}
+.score-badge.green{background:var(--ok-bg);border-color:#86efac;color:var(--ok)}
+
+/* RESPONSIVE */
+@media(max-width:500px){
+  .match-wrap{grid-template-columns:1fr}
+  .tf-btns{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Intel·ligència Artificial – Activitats</div>
+  <h1>Activitats interactives</h1>
+  <p>Practica i verifica el teu aprenentatge · 5 activitats per apartat</p>
+</header>
+
+<nav id="main-nav">
+  <button class="nav-btn active" onclick="showSection('s21')">2.1 Robòtica</button>
+  <button class="nav-btn" onclick="showSection('s22')">2.2 Impressió 3D</button>
+  <button class="nav-btn" onclick="showSection('s23')">2.3 Biometria</button>
+  <button class="nav-btn" onclick="showSection('s24')">2.4 RA / RV</button>
+  <button class="nav-btn" onclick="showSection('s25')">2.5 IoT</button>
+  <button class="nav-btn" onclick="showSection('s26')">2.6 Blockchain</button>
+  <button class="nav-btn" onclick="showSection('s27')">2.7 El núvol</button>
+  <button class="nav-btn" onclick="showSection('s3')">3. IA generativa</button>
+  <button class="nav-btn" onclick="showSection('s31')">3.1 IA empàtica</button>
+  <button class="nav-btn" onclick="showSection('s32')">3.2 IA creativa</button>
+  <button class="nav-btn" onclick="showSection('s4')">4. Mercat laboral</button>
+</nav>
+
+<main>
+
+<!-- ===================== 2.1 ===================== -->
+<div class="section-panel active" id="s21">
+  <div class="section-header">
+    <h2>2.1 Robòtica i IA</h2>
+    <p>5 activitats sobre robots, les seves funcions i la foca terapèutica Paro</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="pb-s21" style="width:0%"></div></div>
+  <div class="score-badge" id="sc-s21">0 / 5 activitats</div>
+
+  <!-- ACT 1 MCQ -->
+  <div class="act-card" id="a-s21-1">
+    <div class="act-header"><div class="act-num">1</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">Quina és la principal funció de Paro, la foca terapèutica?</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s21-1')"><span class="opt-key">A</span>Detectar armes i explosius en situacions de risc</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s21-1')"><span class="opt-key">B</span>Oferir companyia i millorar el benestar emocional de persones grans</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s21-1')"><span class="opt-key">C</span>Competir en tornejos de sumo robòtic al Japó</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s21-1')"><span class="opt-key">D</span>Realitzar tasques agrícoles autònomes</div>
+    </div>
+    <div class="feedback" id="fb-a-s21-1"></div>
+    <button class="check-btn" onclick="checkMcq('a-s21-1','b','s21')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s21-1')">Torna a intentar</button>
+  </div>
+
+  <!-- ACT 2 T/F -->
+  <div class="act-card" id="a-s21-2">
+    <div class="act-header"><div class="act-num">2</div><span class="act-type">Vertader / Fals</span></div>
+    <p class="act-q">Els robots equipats amb IA <strong>només</strong> poden realitzar tasques repetitives i monòtones.</p>
+    <div class="tf-btns">
+      <button class="tf-btn" data-val="true" onclick="selectTf(this,'a-s21-2')">✓ Vertader</button>
+      <button class="tf-btn" data-val="false" onclick="selectTf(this,'a-s21-2')">✗ Fals</button>
+    </div>
+    <div class="feedback" id="fb-a-s21-2"></div>
+    <button class="check-btn" onclick="checkTf('a-s21-2',false,'Els robots amb IA també poden fer tasques <strong>creatives i imaginatives</strong>, com pintar quadres, compondre música o interactuar emocionalment amb persones.','s21')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s21-2')">Torna a intentar</button>
+  </div>
+
+  <!-- ACT 3 MATCH -->
+  <div class="act-card" id="a-s21-3">
+    <div class="act-header"><div class="act-num">3</div><span class="act-type">Relaciona</span></div>
+    <p class="act-q">Relaciona cada tipus de robot amb la seva funció principal. Fes clic en un element de cada columna per emparellar-los.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="match-label">Tipus de robot</div>
+        <div class="match-col" id="mc-s21-L">
+          <div class="match-item" data-id="L0" onclick="matchClick(this,'a-s21-3')">Robot agrícola</div>
+          <div class="match-item" data-id="L1" onclick="matchClick(this,'a-s21-3')">Robot humanoide</div>
+          <div class="match-item" data-id="L2" onclick="matchClick(this,'a-s21-3')">Robot artista</div>
+          <div class="match-item" data-id="L3" onclick="matchClick(this,'a-s21-3')">Robot terapèutic (Paro)</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-label">Funció principal</div>
+        <div class="match-col" id="mc-s21-R">
+          <div class="match-item" data-id="R2" onclick="matchClick(this,'a-s21-3')">Crear obres d'art i composicions musicals</div>
+          <div class="match-item" data-id="R3" onclick="matchClick(this,'a-s21-3')">Companyia i benestar emocional</div>
+          <div class="match-item" data-id="R0" onclick="matchClick(this,'a-s21-3')">Cultius autònoms amb visió per ordinador</div>
+          <div class="match-item" data-id="R1" onclick="matchClick(this,'a-s21-3')">Treballar en entorns perillosos o remots</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-a-s21-3"></div>
+    <button class="reset-btn" onclick="resetMatch('a-s21-3','s21')">Torna a intentar</button>
+  </div>
+
+  <!-- ACT 4 FILL -->
+  <div class="act-card" id="a-s21-4">
+    <div class="act-header"><div class="act-num">4</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits amb les paraules correctes.</p>
+    <div class="fill-text">
+      El 2019, una IA va revisar milers de <input class="fill-input" id="fi-s21-4-0" placeholder="..."> pintats entre els segles XIV i XX. Després, va pintar una obra imitant aquell estil que va ser venuda per gairebé mig milió de <input class="fill-input" id="fi-s21-4-1" placeholder="..."> en una subhasta.
+    </div>
+    <div class="feedback" id="fb-a-s21-4"></div>
+    <button class="check-btn" onclick="checkFill('a-s21-4',['retrats','dòlars'],'s21')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s21-4')">Torna a intentar</button>
+  </div>
+
+  <!-- ACT 5 ORDER -->
+  <div class="act-card" id="a-s21-5">
+    <div class="act-header"><div class="act-num">5</div><span class="act-type">Ordena</span></div>
+    <p class="act-q">Ordena les etapes del procés d'aprenentatge d'un robot amb IA, de la primera a l'última.</p>
+    <ul class="order-list" id="ol-s21-5">
+      <li class="order-item" draggable="true" data-idx="0"><span class="drag-handle">⠿</span><span class="order-text">Rep dades de l'entorn mitjançant sensors</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="1"><span class="drag-handle">⠿</span><span class="order-text">Processa la informació amb algorismes d'IA</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="3"><span class="drag-handle">⠿</span><span class="order-text">Realitza l'acció o tasca encomanada</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="4"><span class="drag-handle">⠿</span><span class="order-text">Avalua el resultat i s'adapta per millorar</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="2"><span class="drag-handle">⠿</span><span class="order-text">Aprèn i millora el seu comportament</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+    </ul>
+    <div class="feedback" id="fb-a-s21-5"></div>
+    <button class="check-btn" onclick="checkOrder('a-s21-5',[0,1,2,3,4],'s21')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s21-5')">Torna a intentar</button>
+  </div>
+</div>
+
+<!-- ===================== 2.2 ===================== -->
+<div class="section-panel" id="s22">
+  <div class="section-header">
+    <h2>2.2 Impressió 3D i IA</h2>
+    <p>5 activitats sobre fabricació additiva, prototips i el gos robot Astro</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="pb-s22" style="width:0%"></div></div>
+  <div class="score-badge" id="sc-s22">0 / 5 activitats</div>
+
+  <div class="act-card" id="a-s22-1">
+    <div class="act-header"><div class="act-num">1</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">Quin és un dels avantatges clau de la IA aplicada a la impressió 3D?</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s22-1')"><span class="opt-key">A</span>Substituir totalment els dissenyadors humans en tots els casos</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s22-1')"><span class="opt-key">B</span>Predir el rendiment d'un objecte <em>abans</em> de fabricar-lo</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s22-1')"><span class="opt-key">C</span>Eliminar completament la necessitat de materials especials</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s22-1')"><span class="opt-key">D</span>Imprimir objectes en temps real sense supervisió</div>
+    </div>
+    <div class="feedback" id="fb-a-s22-1"></div>
+    <button class="check-btn" onclick="checkMcq('a-s22-1','b','s22')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s22-1')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s22-2">
+    <div class="act-header"><div class="act-num">2</div><span class="act-type">Vertader / Fals</span></div>
+    <p class="act-q">La IA en la impressió 3D <strong>només</strong> s'utilitza per escollir els materials adequats per a cada objecte.</p>
+    <div class="tf-btns">
+      <button class="tf-btn" data-val="true" onclick="selectTf(this,'a-s22-2')">✓ Vertader</button>
+      <button class="tf-btn" data-val="false" onclick="selectTf(this,'a-s22-2')">✗ Fals</button>
+    </div>
+    <div class="feedback" id="fb-a-s22-2"></div>
+    <button class="check-btn" onclick="checkTf('a-s22-2',false,'La IA intervé en <strong>múltiples fases</strong>: el disseny CAD, l\'elecció de materials, la supervisió del procés d\'impressió i la predicció del rendiment final.','s22')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s22-2')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s22-3">
+    <div class="act-header"><div class="act-num">3</div><span class="act-type">Relaciona</span></div>
+    <p class="act-q">Relaciona cada funció de la IA amb el seu benefici en la impressió 3D.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="match-label">Funció de la IA</div>
+        <div class="match-col" id="mc-s22-L">
+          <div class="match-item" data-id="L0" onclick="matchClick(this,'a-s22-3')">Predicció del rendiment</div>
+          <div class="match-item" data-id="L1" onclick="matchClick(this,'a-s22-3')">Supervisió del procés</div>
+          <div class="match-item" data-id="L2" onclick="matchClick(this,'a-s22-3')">Creació del disseny CAD</div>
+          <div class="match-item" data-id="L3" onclick="matchClick(this,'a-s22-3')">Personalització del producte</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-label">Benefici</div>
+        <div class="match-col" id="mc-s22-R">
+          <div class="match-item" data-id="R3" onclick="matchClick(this,'a-s22-3')">Productes adaptats a baix cost</div>
+          <div class="match-item" data-id="R0" onclick="matchClick(this,'a-s22-3')">Permet ajustos abans de la producció</div>
+          <div class="match-item" data-id="R2" onclick="matchClick(this,'a-s22-3')">Automatitza el disseny assistit per ordinador</div>
+          <div class="match-item" data-id="R1" onclick="matchClick(this,'a-s22-3')">Evita errors durant la impressió</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-a-s22-3"></div>
+    <button class="reset-btn" onclick="resetMatch('a-s22-3','s22')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s22-4">
+    <div class="act-header"><div class="act-num">4</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits amb les paraules correctes.</p>
+    <div class="fill-text">
+      Astro és un gos robot <input class="fill-input" id="fi-s22-4-0" placeholder="..." style="width:80px"> en 3D que ha estat creat per treballar en la lluita contra el <input class="fill-input" id="fi-s22-4-1" placeholder="..." style="width:70px">. Pot veure, escoltar, reaccionar en temps real i <input class="fill-input" id="fi-s22-4-2" placeholder="..." style="width:80px">.
+    </div>
+    <div class="feedback" id="fb-a-s22-4"></div>
+    <button class="check-btn" onclick="checkFill('a-s22-4',['imprès','crim','aprendre'],'s22')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s22-4')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s22-5">
+    <div class="act-header"><div class="act-num">5</div><span class="act-type">Ordena</span></div>
+    <p class="act-q">Ordena les fases del procés d'impressió 3D amb IA, de la primera a la darrera.</p>
+    <ul class="order-list" id="ol-s22-5">
+      <li class="order-item" draggable="true" data-idx="3"><span class="drag-handle">⠿</span><span class="order-text">S'imprimeix l'objecte amb supervisió de la IA</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="0"><span class="drag-handle">⠿</span><span class="order-text">La IA assisteix en la creació del disseny CAD</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="2"><span class="drag-handle">⠿</span><span class="order-text">La IA simula i prediu el rendiment de l'objecte</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="4"><span class="drag-handle">⠿</span><span class="order-text">La IA avalua el resultat i detecta possibles errors</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="1"><span class="drag-handle">⠿</span><span class="order-text">La IA selecciona els materials més adequats</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+    </ul>
+    <div class="feedback" id="fb-a-s22-5"></div>
+    <button class="check-btn" onclick="checkOrder('a-s22-5',[0,1,2,3,4],'s22')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s22-5')">Torna a intentar</button>
+  </div>
+</div>
+
+<!-- ===================== 2.3 ===================== -->
+<div class="section-panel" id="s23">
+  <div class="section-header">
+    <h2>2.3 Biometria i IA</h2>
+    <p>5 activitats sobre biometria multimodal, comportamental i mesura d'emocions</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="pb-s23" style="width:0%"></div></div>
+  <div class="score-badge" id="sc-s23">0 / 5 activitats</div>
+
+  <div class="act-card" id="a-s23-1">
+    <div class="act-header"><div class="act-num">1</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">Quina és la diferència principal entre la biometria multimodal i la comportamental?</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s23-1')"><span class="opt-key">A</span>La multimodal és més barata; la comportamental és més precisa</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s23-1')"><span class="opt-key">B</span>La multimodal combina diverses característiques físiques; la comportamental analitza la conducta</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s23-1')"><span class="opt-key">C</span>La multimodal analitza la conducta; la comportamental combina trets físics</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s23-1')"><span class="opt-key">D</span>No hi ha cap diferència significativa entre les dues</div>
+    </div>
+    <div class="feedback" id="fb-a-s23-1"></div>
+    <button class="check-btn" onclick="checkMcq('a-s23-1','b','s23')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s23-1')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s23-2">
+    <div class="act-header"><div class="act-num">2</div><span class="act-type">Vertader / Fals</span></div>
+    <p class="act-q">La biometria comportamental és considerada <strong>invasiva</strong> perquè requereix que la persona aturi la seva activitat per ser identificada.</p>
+    <div class="tf-btns">
+      <button class="tf-btn" data-val="true" onclick="selectTf(this,'a-s23-2')">✓ Vertader</button>
+      <button class="tf-btn" data-val="false" onclick="selectTf(this,'a-s23-2')">✗ Fals</button>
+    </div>
+    <div class="feedback" id="fb-a-s23-2"></div>
+    <button class="check-btn" onclick="checkTf('a-s23-2',false,'Tot el contrari: es considera <strong>no invasiva i contínua</strong>, perquè s\'integra en la conducta natural de la persona (manera de caminar, signatura, estil d\'escriptura) sense interrompre les seves activitats.','s23')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s23-2')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s23-3">
+    <div class="act-header"><div class="act-num">3</div><span class="act-type">Relaciona</span></div>
+    <p class="act-q">Relaciona cada exemple amb el tipus de biometria al qual correspon.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="match-label">Exemple</div>
+        <div class="match-col" id="mc-s23-L">
+          <div class="match-item" data-id="L0" onclick="matchClick(this,'a-s23-3')">Reconeixement facial + empremtes digitals</div>
+          <div class="match-item" data-id="L1" onclick="matchClick(this,'a-s23-3')">Anàlisi de la signatura manuscrita</div>
+          <div class="match-item" data-id="L2" onclick="matchClick(this,'a-s23-3')">Reconeixement de veu + trets facials</div>
+          <div class="match-item" data-id="L3" onclick="matchClick(this,'a-s23-3')">Manera de caminar d'una persona</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-label">Tipus de biometria</div>
+        <div class="match-col" id="mc-s23-R">
+          <div class="match-item" data-id="R1" onclick="matchClick(this,'a-s23-3')">Comportamental</div>
+          <div class="match-item" data-id="R0" onclick="matchClick(this,'a-s23-3')">Multimodal</div>
+          <div class="match-item" data-id="R3" onclick="matchClick(this,'a-s23-3')">Comportamental</div>
+          <div class="match-item" data-id="R2" onclick="matchClick(this,'a-s23-3')">Multimodal</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-a-s23-3"></div>
+    <button class="reset-btn" onclick="resetMatch('a-s23-3','s23')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s23-4">
+    <div class="act-header"><div class="act-num">4</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits amb les paraules correctes.</p>
+    <div class="fill-text">
+      Un grup d'investigadors va dissenyar un procediment per identificar <input class="fill-input" id="fi-s23-4-0" placeholder="..."> a través del ritme <input class="fill-input" id="fi-s23-4-1" placeholder="..."> o la freqüència cardíaca, analitzant les ones wifi que reboten en dispositius mòbils.
+    </div>
+    <div class="feedback" id="fb-a-s23-4"></div>
+    <button class="check-btn" onclick="checkFill('a-s23-4',['emocions','respiratori'],'s23')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s23-4')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s23-5">
+    <div class="act-header"><div class="act-num">5</div><span class="act-type">Ordena</span></div>
+    <p class="act-q">Ordena els passos de l'experiment de mesura d'emocions amb ones wifi.</p>
+    <ul class="order-list" id="ol-s23-5">
+      <li class="order-item" draggable="true" data-idx="1"><span class="drag-handle">⠿</span><span class="order-text">Els investigadors emeten senyals de ràdio des d'una xarxa wifi</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="0"><span class="drag-handle">⠿</span><span class="order-text">Les persones observen un vídeo i experimenten emocions</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="4"><span class="drag-handle">⠿</span><span class="order-text">La IA interpreta les emocions gràcies al deep learning</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="2"><span class="drag-handle">⠿</span><span class="order-text">Els senyals reboten en els dispositius mòbils dels participants</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="3"><span class="drag-handle">⠿</span><span class="order-text">La IA analitza els senyals recollits</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+    </ul>
+    <div class="feedback" id="fb-a-s23-5"></div>
+    <button class="check-btn" onclick="checkOrder('a-s23-5',[0,1,2,3,4],'s23')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s23-5')">Torna a intentar</button>
+  </div>
+</div>
+
+<!-- ===================== 2.4 ===================== -->
+<div class="section-panel" id="s24">
+  <div class="section-header">
+    <h2>2.4 Realitat augmentada, virtual i IA</h2>
+    <p>5 activitats sobre RA, RV i les seves aplicacions pràctiques</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="pb-s24" style="width:0%"></div></div>
+  <div class="score-badge" id="sc-s24">0 / 5 activitats</div>
+
+  <div class="act-card" id="a-s24-1">
+    <div class="act-header"><div class="act-num">1</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">L'eina Chiara combina realitat virtual i IA per millorar:</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s24-1')"><span class="opt-key">A</span>La conducció autònoma en entorns urbans</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s24-1')"><span class="opt-key">B</span>La capacitat de parlar en públic</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s24-1')"><span class="opt-key">C</span>El diagnòstic de malalties mentals</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s24-1')"><span class="opt-key">D</span>La comprensió de textos acadèmics</div>
+    </div>
+    <div class="feedback" id="fb-a-s24-1"></div>
+    <button class="check-btn" onclick="checkMcq('a-s24-1','b','s24')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s24-1')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s24-2">
+    <div class="act-header"><div class="act-num">2</div><span class="act-type">Vertader / Fals</span></div>
+    <p class="act-q">La realitat augmentada integrada en parabrises podria proporcionar informació de navegació i alertes en temps real per millorar la seguretat viària.</p>
+    <div class="tf-btns">
+      <button class="tf-btn" data-val="true" onclick="selectTf(this,'a-s24-2')">✓ Vertader</button>
+      <button class="tf-btn" data-val="false" onclick="selectTf(this,'a-s24-2')">✗ Fals</button>
+    </div>
+    <div class="feedback" id="fb-a-s24-2"></div>
+    <button class="check-btn" onclick="checkTf('a-s24-2',true,'Correcte. El text indica que la RA integrada en parabrises aportaria <strong>informació de navegació i alertes en temps real</strong> per millorar la seguretat a la carretera.','s24')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s24-2')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s24-3">
+    <div class="act-header"><div class="act-num">3</div><span class="act-type">Relaciona</span></div>
+    <p class="act-q">Relaciona cada aplicació de la RA/RV amb l'àmbit on s'utilitza.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="match-label">Aplicació</div>
+        <div class="match-col" id="mc-s24-L">
+          <div class="match-item" data-id="L0" onclick="matchClick(this,'a-s24-3')">Simular situacions professionals</div>
+          <div class="match-item" data-id="L1" onclick="matchClick(this,'a-s24-3')">RA en ulleres intel·ligents</div>
+          <div class="match-item" data-id="L2" onclick="matchClick(this,'a-s24-3')">Simular escenaris d'estrès i ansietat</div>
+          <div class="match-item" data-id="L3" onclick="matchClick(this,'a-s24-3')">Entorns virtuals per a reunions</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-label">Àmbit</div>
+        <div class="match-col" id="mc-s24-R">
+          <div class="match-item" data-id="R3" onclick="matchClick(this,'a-s24-3')">Teletreball i col·laboració</div>
+          <div class="match-item" data-id="R0" onclick="matchClick(this,'a-s24-3')">Educació</div>
+          <div class="match-item" data-id="R2" onclick="matchClick(this,'a-s24-3')">Salut mental</div>
+          <div class="match-item" data-id="R1" onclick="matchClick(this,'a-s24-3')">Informació quotidiana</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-a-s24-3"></div>
+    <button class="reset-btn" onclick="resetMatch('a-s24-3','s24')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s24-4">
+    <div class="act-header"><div class="act-num">4</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits.</p>
+    <div class="fill-text">
+      En l'àmbit educatiu, els estudiants podrien aprendre en entorns <input class="fill-input" id="fi-s24-4-0" placeholder="..."> que simularen situacions <input class="fill-input" id="fi-s24-4-1" placeholder="...">, amb contingut tridimensional i situacions de la vida real.
+    </div>
+    <div class="feedback" id="fb-a-s24-4"></div>
+    <button class="check-btn" onclick="checkFill('a-s24-4',['virtuals','professionals'],'s24')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s24-4')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s24-5">
+    <div class="act-header"><div class="act-num">5</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits sobre Chiara.</p>
+    <div class="fill-text">
+      Chiara és un simulador de realitat <input class="fill-input" id="fi-s24-5-0" placeholder="..."> que introdueix l'usuari en un entorn amb persones de <input class="fill-input" id="fi-s24-5-1" placeholder="...">, creant una realitat virtual força similar a un escenari <input class="fill-input" id="fi-s24-5-2" placeholder="..." style="width:80px">.
+    </div>
+    <div class="feedback" id="fb-a-s24-5"></div>
+    <button class="check-btn" onclick="checkFill('a-s24-5',['virtual','veritat','natural'],'s24')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s24-5')">Torna a intentar</button>
+  </div>
+</div>
+
+<!-- ===================== 2.5 ===================== -->
+<div class="section-panel" id="s25">
+  <div class="section-header">
+    <h2>2.5 Internet de les coses (IoT) i IA</h2>
+    <p>5 activitats sobre ciutats intel·ligents, Singapur i la salut connectada</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="pb-s25" style="width:0%"></div></div>
+  <div class="score-badge" id="sc-s25">0 / 5 activitats</div>
+
+  <div class="act-card" id="a-s25-1">
+    <div class="act-header"><div class="act-num">1</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">Quina ciutat lidera el rànquing mundial de ciutats intel·ligents, segons el text?</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s25-1')"><span class="opt-key">A</span>Tòquio</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s25-1')"><span class="opt-key">B</span>Nova York</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s25-1')"><span class="opt-key">C</span>Singapur</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s25-1')"><span class="opt-key">D</span>Dubai</div>
+    </div>
+    <div class="feedback" id="fb-a-s25-1"></div>
+    <button class="check-btn" onclick="checkMcq('a-s25-1','c','s25')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s25-1')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s25-2">
+    <div class="act-header"><div class="act-num">2</div><span class="act-type">Vertader / Fals</span></div>
+    <p class="act-q">Singapur utilitza sensors distribuïts per la ciutat que monitoritzen <strong>únicament</strong> el consum energètic.</p>
+    <div class="tf-btns">
+      <button class="tf-btn" data-val="true" onclick="selectTf(this,'a-s25-2')">✓ Vertader</button>
+      <button class="tf-btn" data-val="false" onclick="selectTf(this,'a-s25-2')">✗ Fals</button>
+    </div>
+    <div class="feedback" id="fb-a-s25-2"></div>
+    <button class="check-btn" onclick="checkTf('a-s25-2',false,'Singapur monitoritza <strong>tres aspectes</strong>: el consum energètic, la generació de residus i el consum d\'aigua potable i residual, tot en temps real.','s25')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s25-2')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s25-3">
+    <div class="act-header"><div class="act-num">3</div><span class="act-type">Relaciona</span></div>
+    <p class="act-q">Relaciona cada servei de Singapur amb el col·lectiu que en té més benefici.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="match-label">Servei</div>
+        <div class="match-col" id="mc-s25-L">
+          <div class="match-item" data-id="L0" onclick="matchClick(this,'a-s25-3')">Xarxa de sensors de monitorització</div>
+          <div class="match-item" data-id="L1" onclick="matchClick(this,'a-s25-3')">Teleassistència mèdica via app</div>
+          <div class="match-item" data-id="L2" onclick="matchClick(this,'a-s25-3')">Sistemes de seguretat intel·ligent</div>
+          <div class="match-item" data-id="L3" onclick="matchClick(this,'a-s25-3')">Wearables per a assegurances</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-label">Col·lectiu beneficiat</div>
+        <div class="match-col" id="mc-s25-R">
+          <div class="match-item" data-id="R2" onclick="matchClick(this,'a-s25-3')">Tots els ciutadans</div>
+          <div class="match-item" data-id="R3" onclick="matchClick(this,'a-s25-3')">Persones amb risc de malaltia</div>
+          <div class="match-item" data-id="R1" onclick="matchClick(this,'a-s25-3')">Persones amb mobilitat reduïda</div>
+          <div class="match-item" data-id="R0" onclick="matchClick(this,'a-s25-3')">Gestors i administradors de la ciutat</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-a-s25-3"></div>
+    <button class="reset-btn" onclick="resetMatch('a-s25-3','s25')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s25-4">
+    <div class="act-header"><div class="act-num">4</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits.</p>
+    <div class="fill-text">
+      En el cas pràctic de salut i IoT, la companyia d'assegurances podria proporcionar un <input class="fill-input" id="fi-s25-4-0" placeholder="..."> per mesurar dades biomètriques com la freqüència <input class="fill-input" id="fi-s25-4-1" placeholder="...">, l'activitat física diària i el son.
+    </div>
+    <div class="feedback" id="fb-a-s25-4"></div>
+    <button class="check-btn" onclick="checkFill('a-s25-4',['wearable','cardíaca'],'s25')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s25-4')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s25-5">
+    <div class="act-header"><div class="act-num">5</div><span class="act-type">Ordena</span></div>
+    <p class="act-q">Ordena el procés d'un sistema d'assegurança intel·ligent amb IoT i IA.</p>
+    <ul class="order-list" id="ol-s25-5">
+      <li class="order-item" draggable="true" data-idx="4"><span class="drag-handle">⠿</span><span class="order-text">L'asseguradora ofereix una prima personalitzada o descomptes</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="1"><span class="drag-handle">⠿</span><span class="order-text">El wearable recull dades biomètriques en temps real</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="3"><span class="drag-handle">⠿</span><span class="order-text">La IA avalua el risc de malalties del client</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="0"><span class="drag-handle">⠿</span><span class="order-text">L'asseguradora proporciona un wearable al client</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="2"><span class="drag-handle">⠿</span><span class="order-text">Les dades s'envien a una plataforma d'IA per analitzar-les</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+    </ul>
+    <div class="feedback" id="fb-a-s25-5"></div>
+    <button class="check-btn" onclick="checkOrder('a-s25-5',[0,1,2,3,4],'s25')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s25-5')">Torna a intentar</button>
+  </div>
+</div>
+
+<!-- ===================== 2.6 ===================== -->
+<div class="section-panel" id="s26">
+  <div class="section-header">
+    <h2>2.6 Blockchain i IA</h2>
+    <p>5 activitats sobre seguretat, transparència i governança descentralitzada</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="pb-s26" style="width:0%"></div></div>
+  <div class="score-badge" id="sc-s26">0 / 5 activitats</div>
+
+  <div class="act-card" id="a-s26-1">
+    <div class="act-header"><div class="act-num">1</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">Quin és l'objectiu principal de la combinació de blockchain i IA?</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s26-1')"><span class="opt-key">A</span>Crear criptomonedes més eficients i rendibles</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s26-1')"><span class="opt-key">B</span>Evitar fraus i millorar la transparència en la gestió de dades</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s26-1')"><span class="opt-key">C</span>Accelerar la producció industrial automatitzada</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s26-1')"><span class="opt-key">D</span>Millorar la velocitat de les xarxes socials</div>
+    </div>
+    <div class="feedback" id="fb-a-s26-1"></div>
+    <button class="check-btn" onclick="checkMcq('a-s26-1','b','s26')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s26-1')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s26-2">
+    <div class="act-header"><div class="act-num">2</div><span class="act-type">Vertader / Fals</span></div>
+    <p class="act-q">La governança descentralitzada gràcies al blockchain i la IA ja és una realitat completament consolidada arreu del món.</p>
+    <div class="tf-btns">
+      <button class="tf-btn" data-val="true" onclick="selectTf(this,'a-s26-2')">✓ Vertader</button>
+      <button class="tf-btn" data-val="false" onclick="selectTf(this,'a-s26-2')">✗ Fals</button>
+    </div>
+    <div class="feedback" id="fb-a-s26-2"></div>
+    <button class="check-btn" onclick="checkTf('a-s26-2',false,'El text afirma que la governança descentralitzada <strong>«arribarà a ser una realitat»</strong>, indicant que és una possibilitat futura, no un fet ja consolidat.','s26')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s26-2')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s26-3">
+    <div class="act-header"><div class="act-num">3</div><span class="act-type">Relaciona</span></div>
+    <p class="act-q">Relaciona cada àmbit amb el benefici que aporta la combinació de blockchain i IA.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="match-label">Àmbit</div>
+        <div class="match-col" id="mc-s26-L">
+          <div class="match-item" data-id="L0" onclick="matchClick(this,'a-s26-3')">Empreses</div>
+          <div class="match-item" data-id="L1" onclick="matchClick(this,'a-s26-3')">Finances</div>
+          <div class="match-item" data-id="L2" onclick="matchClick(this,'a-s26-3')">Vida política</div>
+          <div class="match-item" data-id="L3" onclick="matchClick(this,'a-s26-3')">Entorns locals</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-label">Benefici</div>
+        <div class="match-col" id="mc-s26-R">
+          <div class="match-item" data-id="R3" onclick="matchClick(this,'a-s26-3')">Governança descentralitzada</div>
+          <div class="match-item" data-id="R0" onclick="matchClick(this,'a-s26-3')">Gestió de dades transparent</div>
+          <div class="match-item" data-id="R2" onclick="matchClick(this,'a-s26-3')">Presa de decisions transparent</div>
+          <div class="match-item" data-id="R1" onclick="matchClick(this,'a-s26-3')">Evitar fraus econòmics</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-a-s26-3"></div>
+    <button class="reset-btn" onclick="resetMatch('a-s26-3','s26')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s26-4">
+    <div class="act-header"><div class="act-num">4</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits.</p>
+    <div class="fill-text">
+      Gràcies al blockchain i la IA, la governança <input class="fill-input" id="fi-s26-4-0" placeholder="..." style="width:130px"> permetria la presa de decisions <input class="fill-input" id="fi-s26-4-1" placeholder="..." style="width:110px"> en entorns locals.
+    </div>
+    <div class="feedback" id="fb-a-s26-4"></div>
+    <button class="check-btn" onclick="checkFill('a-s26-4',['descentralitzada','transparent'],'s26')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s26-4')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s26-5">
+    <div class="act-header"><div class="act-num">5</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">La "governança descentralitzada" que permet el blockchain i la IA implica:</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s26-5')"><span class="opt-key">A</span>Que les decisions es prenguin exclusivament per robots i algorismes sense supervisió humana</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s26-5')"><span class="opt-key">B</span>Que una sola empresa controli totes les dades de manera centralitzada</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s26-5')"><span class="opt-key">C</span>Una presa de decisions transparent en entorns locals, sense dependre d'una autoritat central</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s26-5')"><span class="opt-key">D</span>L'eliminació de tots els governs nacionals i institucions polítiques</div>
+    </div>
+    <div class="feedback" id="fb-a-s26-5"></div>
+    <button class="check-btn" onclick="checkMcq('a-s26-5','c','s26')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s26-5')">Torna a intentar</button>
+  </div>
+</div>
+
+<!-- ===================== 2.7 ===================== -->
+<div class="section-panel" id="s27">
+  <div class="section-header">
+    <h2>2.7 El núvol i la IA</h2>
+    <p>5 activitats sobre computació en el núvol, seguretat i fake news</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="pb-s27" style="width:0%"></div></div>
+  <div class="score-badge" id="sc-s27">0 / 5 activitats</div>
+
+  <div class="act-card" id="a-s27-1">
+    <div class="act-header"><div class="act-num">1</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">Quina és una de les principals amenaces associades a l'ús de la IA en el núvol, segons els experts?</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s27-1')"><span class="opt-key">A</span>La lentitud en el processament de grans volums de dades</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s27-1')"><span class="opt-key">B</span>La creació i difusió de contingut fals (fake news)</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s27-1')"><span class="opt-key">C</span>L'augment dels costos d'infraestructura per a les empreses</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s27-1')"><span class="opt-key">D</span>La incompatibilitat amb dispositius mòbils antics</div>
+    </div>
+    <div class="feedback" id="fb-a-s27-1"></div>
+    <button class="check-btn" onclick="checkMcq('a-s27-1','b','s27')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s27-1')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s27-2">
+    <div class="act-header"><div class="act-num">2</div><span class="act-type">Vertader / Fals</span></div>
+    <p class="act-q">Les empreses que volen usar IA en el núvol han de gestionar tota la infraestructura informàtica per elles mateixes.</p>
+    <div class="tf-btns">
+      <button class="tf-btn" data-val="true" onclick="selectTf(this,'a-s27-2')">✓ Vertader</button>
+      <button class="tf-btn" data-val="false" onclick="selectTf(this,'a-s27-2')">✗ Fals</button>
+    </div>
+    <div class="feedback" id="fb-a-s27-2"></div>
+    <button class="check-btn" onclick="checkTf('a-s27-2',false,'Les plataformes en el núvol permeten a les empreses <strong>desenvolupar, entrenar i desplegar models d\'IA sense la necessitat de gestionar la infraestructura subjacent</strong>. Això és precisament un dels seus avantatges principals.','s27')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s27-2')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s27-3">
+    <div class="act-header"><div class="act-num">3</div><span class="act-type">Relaciona</span></div>
+    <p class="act-q">Relaciona cada funció del núvol + IA amb el seu benefici principal.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="match-label">Funció</div>
+        <div class="match-col" id="mc-s27-L">
+          <div class="match-item" data-id="L0" onclick="matchClick(this,'a-s27-3')">Emmagatzematge escalable</div>
+          <div class="match-item" data-id="L1" onclick="matchClick(this,'a-s27-3')">Detecció de patrons anòmals</div>
+          <div class="match-item" data-id="L2" onclick="matchClick(this,'a-s27-3')">Optimització de recursos</div>
+          <div class="match-item" data-id="L3" onclick="matchClick(this,'a-s27-3')">Automatització de tasques</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-label">Benefici</div>
+        <div class="match-col" id="mc-s27-R">
+          <div class="match-item" data-id="R2" onclick="matchClick(this,'a-s27-3')">Reducció de costos operatius</div>
+          <div class="match-item" data-id="R0" onclick="matchClick(this,'a-s27-3')">Gestió de grans quantitats de dades</div>
+          <div class="match-item" data-id="R3" onclick="matchClick(this,'a-s27-3')">Col·laboració més eficient</div>
+          <div class="match-item" data-id="R1" onclick="matchClick(this,'a-s27-3')">Seguretat cibernètica millorada</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-a-s27-3"></div>
+    <button class="reset-btn" onclick="resetMatch('a-s27-3','s27')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s27-4">
+    <div class="act-header"><div class="act-num">4</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits sobre les fake news a TikTok.</p>
+    <div class="fill-text">
+      A TikTok hi ha comptes que difonen vídeos falsos creats amb IA. La imatge dels protagonistes és <input class="fill-input" id="fi-s27-4-0" placeholder="..." style="width:80px"> i s'anima per donar <input class="fill-input" id="fi-s27-4-1" placeholder="..."> al rostre. La veu és <input class="fill-input" id="fi-s27-4-2" placeholder="..." style="width:110px"> i tampoc és real.
+    </div>
+    <div class="feedback" id="fb-a-s27-4"></div>
+    <button class="check-btn" onclick="checkFill('a-s27-4',['fictícia','moviment','automatitzada'],'s27')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s27-4')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s27-5">
+    <div class="act-header"><div class="act-num">5</div><span class="act-type">Ordena</span></div>
+    <p class="act-q">Ordena els passos per verificar si una notícia és una fake news, del primer al darrer.</p>
+    <ul class="order-list" id="ol-s27-5">
+      <li class="order-item" draggable="true" data-idx="2"><span class="drag-handle">⠿</span><span class="order-text">Consulta webs especialitzades com Maldita.es</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="0"><span class="drag-handle">⠿</span><span class="order-text">Dubta de la notícia si sembla massa impactant o increïble</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="4"><span class="drag-handle">⠿</span><span class="order-text">No la comparteixis si no has pogut verificar-la</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="3"><span class="drag-handle">⠿</span><span class="order-text">Comprova la data i el context original de la notícia</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="1"><span class="drag-handle">⠿</span><span class="order-text">Busca la mateixa notícia en diverses fonts fiables</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+    </ul>
+    <div class="feedback" id="fb-a-s27-5"></div>
+    <button class="check-btn" onclick="checkOrder('a-s27-5',[0,1,2,3,4],'s27')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s27-5')">Torna a intentar</button>
+  </div>
+</div>
+
+<!-- ===================== 3 ===================== -->
+<div class="section-panel" id="s3">
+  <div class="section-header">
+    <h2>3. Noves funcionalitats de la IA</h2>
+    <p>5 activitats sobre la IA generativa i les seves eines</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="pb-s3" style="width:0%"></div></div>
+  <div class="score-badge" id="sc-s3">0 / 5 activitats</div>
+
+  <div class="act-card" id="a-s3-1">
+    <div class="act-header"><div class="act-num">1</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">Quines són les IA generatives de text més conegudes, esmentades al text?</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s3-1')"><span class="opt-key">A</span>DALL-E, Midjourney i Stable Diffusion</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s3-1')"><span class="opt-key">B</span>ChatGPT, Gemini i Bing Chat</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s3-1')"><span class="opt-key">C</span>Siri, Alexa i Google Assistant</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s3-1')"><span class="opt-key">D</span>TensorFlow, PyTorch i Keras</div>
+    </div>
+    <div class="feedback" id="fb-a-s3-1"></div>
+    <button class="check-btn" onclick="checkMcq('a-s3-1','b','s3')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s3-1')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s3-2">
+    <div class="act-header"><div class="act-num">2</div><span class="act-type">Vertader / Fals</span></div>
+    <p class="act-q">La IA generativa sempre produeix resultats perfectes i sense errors de qualitat o precisió.</p>
+    <div class="tf-btns">
+      <button class="tf-btn" data-val="true" onclick="selectTf(this,'a-s3-2')">✓ Vertader</button>
+      <button class="tf-btn" data-val="false" onclick="selectTf(this,'a-s3-2')">✗ Fals</button>
+    </div>
+    <div class="feedback" id="fb-a-s3-2"></div>
+    <button class="check-btn" onclick="checkTf('a-s3-2',false,'La IA generativa té punts febles: pot generar errors com <strong>col·locar dos volants a un cotxe o tres cames a una persona</strong>, perquè captar la complexitat de la realitat és un desafiament.','s3')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s3-2')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s3-3">
+    <div class="act-header"><div class="act-num">3</div><span class="act-type">Relaciona</span></div>
+    <p class="act-q">Relaciona cada eina d'IA generativa amb el tipus de contingut que crea principalment.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="match-label">Eina</div>
+        <div class="match-col" id="mc-s3-L">
+          <div class="match-item" data-id="L0" onclick="matchClick(this,'a-s3-3')">ChatGPT</div>
+          <div class="match-item" data-id="L1" onclick="matchClick(this,'a-s3-3')">DALL-E</div>
+          <div class="match-item" data-id="L2" onclick="matchClick(this,'a-s3-3')">IA generativa d'àudio</div>
+          <div class="match-item" data-id="L3" onclick="matchClick(this,'a-s3-3')">Gemini</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-label">Tipus de contingut</div>
+        <div class="match-col" id="mc-s3-R">
+          <div class="match-item" data-id="R3" onclick="matchClick(this,'a-s3-3')">Text i respostes multimodals</div>
+          <div class="match-item" data-id="R0" onclick="matchClick(this,'a-s3-3')">Text i respostes conversacionals</div>
+          <div class="match-item" data-id="R2" onclick="matchClick(this,'a-s3-3')">Música i veu sintètica</div>
+          <div class="match-item" data-id="R1" onclick="matchClick(this,'a-s3-3')">Imatges a partir de text</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-a-s3-3"></div>
+    <button class="reset-btn" onclick="resetMatch('a-s3-3','s3')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s3-4">
+    <div class="act-header"><div class="act-num">4</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits.</p>
+    <div class="fill-text">
+      La IA generativa permet crear nous continguts en diversos suports, com text, imatges, vídeos, <input class="fill-input" id="fi-s3-4-0" placeholder="..."> i <input class="fill-input" id="fi-s3-4-1" placeholder="...">, després de rebre instruccions per part de l'usuari.
+    </div>
+    <div class="feedback" id="fb-a-s3-4"></div>
+    <button class="check-btn" onclick="checkFill('a-s3-4',['àudio','codi'],'s3')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s3-4')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s3-5">
+    <div class="act-header"><div class="act-num">5</div><span class="act-type">Ordena</span></div>
+    <p class="act-q">Ordena el procés bàsic d'ús d'una eina d'IA generativa.</p>
+    <ul class="order-list" id="ol-s3-5">
+      <li class="order-item" draggable="true" data-idx="4"><span class="drag-handle">⠿</span><span class="order-text">L'usuari refina les instruccions si cal millorar el resultat</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="1"><span class="drag-handle">⠿</span><span class="order-text">La IA analitza el prompt i accedeix al seu entrenament</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="0"><span class="drag-handle">⠿</span><span class="order-text">L'usuari proporciona instruccions o un prompt</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="3"><span class="drag-handle">⠿</span><span class="order-text">L'usuari revisa i avalua el resultat obtingut</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="2"><span class="drag-handle">⠿</span><span class="order-text">La IA genera el contingut nou</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+    </ul>
+    <div class="feedback" id="fb-a-s3-5"></div>
+    <button class="check-btn" onclick="checkOrder('a-s3-5',[0,1,2,3,4],'s3')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s3-5')">Torna a intentar</button>
+  </div>
+</div>
+
+<!-- ===================== 3.1 ===================== -->
+<div class="section-panel" id="s31">
+  <div class="section-header">
+    <h2>3.1 La IA empàtica i emocional</h2>
+    <p>5 activitats sobre la IA aplicada a la teràpia psicològica</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="pb-s31" style="width:0%"></div></div>
+  <div class="score-badge" id="sc-s31">0 / 5 activitats</div>
+
+  <div class="act-card" id="a-s31-1">
+    <div class="act-header"><div class="act-num">1</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">Per quin motiu principal alguns pacients es van sentir més còmodes amb la IA que amb un terapeuta humà?</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s31-1')"><span class="opt-key">A</span>Perquè la IA és considerada més intel·ligent que un psicòleg</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s31-1')"><span class="opt-key">B</span>Perquè no se sentien jutjats ni apressats a relatar els seus problemes</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s31-1')"><span class="opt-key">C</span>Perquè la IA és més econòmica que un terapeuta humà</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s31-1')"><span class="opt-key">D</span>Perquè la IA pot fer diagnòstics mèdics precisos i definitius</div>
+    </div>
+    <div class="feedback" id="fb-a-s31-1"></div>
+    <button class="check-btn" onclick="checkMcq('a-s31-1','b','s31')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s31-1')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s31-2">
+    <div class="act-header"><div class="act-num">2</div><span class="act-type">Vertader / Fals</span></div>
+    <p class="act-q">Segons el text, la IA pot substituir completament el psicòleg en el tractament de pacients.</p>
+    <div class="tf-btns">
+      <button class="tf-btn" data-val="true" onclick="selectTf(this,'a-s31-2')">✓ Vertader</button>
+      <button class="tf-btn" data-val="false" onclick="selectTf(this,'a-s31-2')">✗ Fals</button>
+    </div>
+    <div class="feedback" id="fb-a-s31-2"></div>
+    <button class="check-btn" onclick="checkTf('a-s31-2',false,'El text és clar: <strong>«la IA no pot substituir al psicòleg»</strong>, tot i que sí pot col·laborar amb ell, igual que en qualsevol altre camp professional.','s31')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s31-2')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s31-3">
+    <div class="act-header"><div class="act-num">3</div><span class="act-type">Relaciona</span></div>
+    <p class="act-q">Relaciona cada avantatge de la IA com a terapeuta amb la seva explicació.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="match-label">Avantatge</div>
+        <div class="match-col" id="mc-s31-L">
+          <div class="match-item" data-id="L0" onclick="matchClick(this,'a-s31-3')">No comet errors per oblit</div>
+          <div class="match-item" data-id="L1" onclick="matchClick(this,'a-s31-3')">No pateix fatiga</div>
+          <div class="match-item" data-id="L2" onclick="matchClick(this,'a-s31-3')">Disponibilitat de temps</div>
+          <div class="match-item" data-id="L3" onclick="matchClick(this,'a-s31-3')">No jutja el pacient</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-label">Explicació</div>
+        <div class="match-col" id="mc-s31-R">
+          <div class="match-item" data-id="R3" onclick="matchClick(this,'a-s31-3')">Els pacients se senten còmodes compartint informació íntima</div>
+          <div class="match-item" data-id="R0" onclick="matchClick(this,'a-s31-3')">Manté tota la informació del pacient perfectament</div>
+          <div class="match-item" data-id="R2" onclick="matchClick(this,'a-s31-3')">Pot invertir més temps amb cada pacient</div>
+          <div class="match-item" data-id="R1" onclick="matchClick(this,'a-s31-3')">Manté el mateix nivell d'atenció sempre</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-a-s31-3"></div>
+    <button class="reset-btn" onclick="resetMatch('a-s31-3','s31')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s31-4">
+    <div class="act-header"><div class="act-num">4</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits.</p>
+    <div class="fill-text">
+      La IA aplicada a la teràpia psicològica s'ha estudiat usant algorismes de <input class="fill-input" id="fi-s31-4-0" placeholder="..." style="width:60px"> learning. Alguns pacients van manifestar sentir-se més <input class="fill-input" id="fi-s31-4-1" placeholder="..."> al compartir informació privada amb una IA que amb un humà.
+    </div>
+    <div class="feedback" id="fb-a-s31-4"></div>
+    <button class="check-btn" onclick="checkFill('a-s31-4',['deep','còmodes'],'s31')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s31-4')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s31-5">
+    <div class="act-header"><div class="act-num">5</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">Quina és la conclusió principal del text sobre la IA aplicada a la teràpia psicològica?</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s31-5')"><span class="opt-key">A</span>La IA ha demostrat ser superior als psicòlegs humans en tots els casos</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s31-5')"><span class="opt-key">B</span>La IA no té cap utilitat real en el camp de la psicologia</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s31-5')"><span class="opt-key">C</span>La IA pot col·laborar amb el psicòleg però no el pot substituir</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s31-5')"><span class="opt-key">D</span>La IA provoca empitjorament en la majoria de pacients que la utilitzen</div>
+    </div>
+    <div class="feedback" id="fb-a-s31-5"></div>
+    <button class="check-btn" onclick="checkMcq('a-s31-5','c','s31')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s31-5')">Torna a intentar</button>
+  </div>
+</div>
+
+<!-- ===================== 3.2 ===================== -->
+<div class="section-panel" id="s32">
+  <div class="section-header">
+    <h2>3.2 La IA creativa i artística</h2>
+    <p>5 activitats sobre creativitat, drets d'autor i el debat ètic</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="pb-s32" style="width:0%"></div></div>
+  <div class="score-badge" id="sc-s32">0 / 5 activitats</div>
+
+  <div class="act-card" id="a-s32-1">
+    <div class="act-header"><div class="act-num">1</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">Quina és una de les preguntes ètiques centrals que planteja la IA creativa?</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s32-1')"><span class="opt-key">A</span>El cost massa elevat de les eines d'IA artística per a artistes independents</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s32-1')"><span class="opt-key">B</span>Qui té els drets d'autor del contingut creat per la IA</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s32-1')"><span class="opt-key">C</span>La lentitud de la IA per generar obres d'art de qualitat</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s32-1')"><span class="opt-key">D</span>La impossibilitat de la IA per crear composicions musicals</div>
+    </div>
+    <div class="feedback" id="fb-a-s32-1"></div>
+    <button class="check-btn" onclick="checkMcq('a-s32-1','b','s32')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s32-1')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s32-2">
+    <div class="act-header"><div class="act-num">2</div><span class="act-type">Vertader / Fals</span></div>
+    <p class="act-q">La IA creativa no genera cap preocupació ètica perquè les seves creacions no afecten els artistes humans.</p>
+    <div class="tf-btns">
+      <button class="tf-btn" data-val="true" onclick="selectTf(this,'a-s32-2')">✓ Vertader</button>
+      <button class="tf-btn" data-val="false" onclick="selectTf(this,'a-s32-2')">✗ Fals</button>
+    </div>
+    <div class="feedback" id="fb-a-s32-2"></div>
+    <button class="check-btn" onclick="checkTf('a-s32-2',false,'El text recull diverses preocupacions: el risc de <strong>contingut fals o enganyós</strong>, l\'<strong>impacte econòmic en els artistes</strong> i reptes ètics com els drets d\'autor i qui pot beneficiar-se del treball d\'una IA.','s32')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s32-2')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s32-3">
+    <div class="act-header"><div class="act-num">3</div><span class="act-type">Relaciona</span></div>
+    <p class="act-q">Relaciona cada crítica a la IA creativa amb el seu motiu principal.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="match-label">Crítica</div>
+        <div class="match-col" id="mc-s32-L">
+          <div class="match-item" data-id="L0" onclick="matchClick(this,'a-s32-3')">Creació de contingut fals</div>
+          <div class="match-item" data-id="L1" onclick="matchClick(this,'a-s32-3')">Impacte en els artistes</div>
+          <div class="match-item" data-id="L2" onclick="matchClick(this,'a-s32-3')">Drets d'autor</div>
+          <div class="match-item" data-id="L3" onclick="matchClick(this,'a-s32-3')">Benefici per treball aliè</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-label">Motiu / Preocupació</div>
+        <div class="match-col" id="mc-s32-R">
+          <div class="match-item" data-id="R2" onclick="matchClick(this,'a-s32-3')">A qui pertany l'obra creada per IA</div>
+          <div class="match-item" data-id="R0" onclick="matchClick(this,'a-s32-3')">Risc de desinformació</div>
+          <div class="match-item" data-id="R3" onclick="matchClick(this,'a-s32-3')">Pot un humà cobrar per una obra d'una IA?</div>
+          <div class="match-item" data-id="R1" onclick="matchClick(this,'a-s32-3')">Possible pèrdua del sustent econòmic dels creadors</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-a-s32-3"></div>
+    <button class="reset-btn" onclick="resetMatch('a-s32-3','s32')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s32-4">
+    <div class="act-header"><div class="act-num">4</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits.</p>
+    <div class="fill-text">
+      La IA <input class="fill-input" id="fi-s32-4-0" placeholder="..."> és una branca molt popular que permet crear contingut únic. S'ha destacat per la qualitat de les seves creacions en tasques com pintar <input class="fill-input" id="fi-s32-4-1" placeholder="...">, compondre música o generar contingut <input class="fill-input" id="fi-s32-4-2" placeholder="...">.
+    </div>
+    <div class="feedback" id="fb-a-s32-4"></div>
+    <button class="check-btn" onclick="checkFill('a-s32-4',['generativa','quadres','literari'],'s32')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s32-4')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s32-5">
+    <div class="act-header"><div class="act-num">5</div><span class="act-type">Ordena</span></div>
+    <p class="act-q">Ordena les etapes del debat social que genera la IA creativa.</p>
+    <ul class="order-list" id="ol-s32-5">
+      <li class="order-item" draggable="true" data-idx="3"><span class="drag-handle">⠿</span><span class="order-text">Els artistes humans expressen preocupació pel seu futur professional</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="0"><span class="drag-handle">⠿</span><span class="order-text">La IA crea una obra artística de qualitat sorprenent</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="4"><span class="drag-handle">⠿</span><span class="order-text">La societat i els legisladors debaten sobre la seva regulació</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="1"><span class="drag-handle">⠿</span><span class="order-text">L'obra es difon i genera admiració pública</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="2"><span class="drag-handle">⠿</span><span class="order-text">Sorgeix el debat sobre l'autenticitat i els drets d'autor</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+    </ul>
+    <div class="feedback" id="fb-a-s32-5"></div>
+    <button class="check-btn" onclick="checkOrder('a-s32-5',[0,1,2,3,4],'s32')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s32-5')">Torna a intentar</button>
+  </div>
+</div>
+
+<!-- ===================== 4 ===================== -->
+<div class="section-panel" id="s4">
+  <div class="section-header">
+    <h2>4. Canvis en el mercat laboral</h2>
+    <p>5 activitats sobre l'impacte de la IA en l'ocupació i els recursos humans</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="pb-s4" style="width:0%"></div></div>
+  <div class="score-badge" id="sc-s4">0 / 5 activitats</div>
+
+  <div class="act-card" id="a-s4-1">
+    <div class="act-header"><div class="act-num">1</div><span class="act-type">Opció múltiple</span></div>
+    <p class="act-q">Quin és el principal risc detectat en l'ús de la IA per a la selecció de personal?</p>
+    <div class="mcq-opts">
+      <div class="mcq-opt" data-val="a" onclick="selectMcq(this,'a-s4-1')"><span class="opt-key">A</span>Que la IA sigui massa lenta per processar les candidatures rebudes</div>
+      <div class="mcq-opt" data-val="b" onclick="selectMcq(this,'a-s4-1')"><span class="opt-key">B</span>Que la IA reprodueixi els biaixos de les dades amb les quals va ser entrenada</div>
+      <div class="mcq-opt" data-val="c" onclick="selectMcq(this,'a-s4-1')"><span class="opt-key">C</span>Que la IA no pugui llegir currículums en format paper</div>
+      <div class="mcq-opt" data-val="d" onclick="selectMcq(this,'a-s4-1')"><span class="opt-key">D</span>Que la implementació de la IA sigui massa costosa per a petites empreses</div>
+    </div>
+    <div class="feedback" id="fb-a-s4-1"></div>
+    <button class="check-btn" onclick="checkMcq('a-s4-1','b','s4')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s4-1')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s4-2">
+    <div class="act-header"><div class="act-num">2</div><span class="act-type">Vertader / Fals</span></div>
+    <p class="act-q">El Boeing PAV necessita un aeroport convencional i una pista d'aterratge per operar.</p>
+    <div class="tf-btns">
+      <button class="tf-btn" data-val="true" onclick="selectTf(this,'a-s4-2')">✓ Vertader</button>
+      <button class="tf-btn" data-val="false" onclick="selectTf(this,'a-s4-2')">✗ Fals</button>
+    </div>
+    <div class="feedback" id="fb-a-s4-2"></div>
+    <button class="check-btn" onclick="checkTf('a-s4-2',false,'El Boeing PAV té un <strong>sistema d\'enlairament i aterratge vertical</strong>, similar als helicòpters, la qual cosa li permet operar <strong>sense necessitar aeroport ni pista</strong> d\'aterratge convencional.','s4')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s4-2')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s4-3">
+    <div class="act-header"><div class="act-num">3</div><span class="act-type">Relaciona</span></div>
+    <p class="act-q">Relaciona cada funció de la IA en Recursos Humans amb el benefici esperat.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="match-label">Funció</div>
+        <div class="match-col" id="mc-s4-L">
+          <div class="match-item" data-id="L0" onclick="matchClick(this,'a-s4-3')">Selecció de personal</div>
+          <div class="match-item" data-id="L1" onclick="matchClick(this,'a-s4-3')">Presa de decisions</div>
+          <div class="match-item" data-id="L2" onclick="matchClick(this,'a-s4-3')">Gestió del benestar</div>
+          <div class="match-item" data-id="L3" onclick="matchClick(this,'a-s4-3')">Anàlisi de dades laborals</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-label">Benefici esperat</div>
+        <div class="match-col" id="mc-s4-R">
+          <div class="match-item" data-id="R3" onclick="matchClick(this,'a-s4-3')">Millora de l'eficiència del departament</div>
+          <div class="match-item" data-id="R0" onclick="matchClick(this,'a-s4-3')">Reduir el biaix subjectiu humà</div>
+          <div class="match-item" data-id="R2" onclick="matchClick(this,'a-s4-3')">Millorar la satisfacció del personal</div>
+          <div class="match-item" data-id="R1" onclick="matchClick(this,'a-s4-3')">Decisions més adequades i objectives</div>
+        </div>
+      </div>
+    </div>
+    <div class="feedback" id="fb-a-s4-3"></div>
+    <button class="reset-btn" onclick="resetMatch('a-s4-3','s4')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s4-4">
+    <div class="act-header"><div class="act-num">4</div><span class="act-type">Completa la frase</span></div>
+    <p class="act-q">Omple els espais buits sobre el cas de la IA en selecció de personal.</p>
+    <div class="fill-text">
+      La IA en la selecció de personal no va ser <input class="fill-input" id="fi-s4-4-0" placeholder="..."> perquè les dades amb les quals havia estat <input class="fill-input" id="fi-s4-4-1" placeholder="..."> no eren objectives: es basaven en seleccions prèvies realitzades per humans amb els seus propis biaixos.
+    </div>
+    <div class="feedback" id="fb-a-s4-4"></div>
+    <button class="check-btn" onclick="checkFill('a-s4-4',['neutral','entrenada'],'s4')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s4-4')">Torna a intentar</button>
+  </div>
+
+  <div class="act-card" id="a-s4-5">
+    <div class="act-header"><div class="act-num">5</div><span class="act-type">Ordena</span></div>
+    <p class="act-q">Ordena els passos que van conduir al fracàs de la IA en la selecció de personal.</p>
+    <ul class="order-list" id="ol-s4-5">
+      <li class="order-item" draggable="true" data-idx="3"><span class="drag-handle">⠿</span><span class="order-text">La IA selecciona candidats de manera no neutral</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="1"><span class="drag-handle">⠿</span><span class="order-text">Aquestes seleccions s'utilitzen com a dades d'entrenament per a la IA</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="4"><span class="drag-handle">⠿</span><span class="order-text">Es detecta el problema i es qüestiona l'ús de la IA en RRHH</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="0"><span class="drag-handle">⠿</span><span class="order-text">El departament de RRHH realitza seleccions amb biaixos subjectius</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+      <li class="order-item" draggable="true" data-idx="2"><span class="drag-handle">⠿</span><span class="order-text">La IA aprèn i reprodueix els mateixos biaixos humans</span><div class="order-arrows"><button class="arr-btn" onclick="moveUp(this)">▲</button><button class="arr-btn" onclick="moveDown(this)">▼</button></div></li>
+    </ul>
+    <div class="feedback" id="fb-a-s4-5"></div>
+    <button class="check-btn" onclick="checkOrder('a-s4-5',[0,1,2,3,4],'s4')">Comprova</button>
+    <button class="reset-btn" onclick="resetAct('a-s4-5')">Torna a intentar</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ---- STATE ----
+const state = {};
+const matchState = {};
+
+function initSection(sid){ if(!state[sid]) state[sid]={done:new Set()}; }
+
+// ---- NAVIGATION ----
+function showSection(id){
+  document.querySelectorAll('.section-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  btns.forEach(b=>{ if(b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active'); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ---- MCQ ----
+function selectMcq(el, actId){
+  if(document.getElementById('fb-'+actId).classList.contains('ok')) return;
+  const opts = el.closest('.mcq-opts').querySelectorAll('.mcq-opt');
+  opts.forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function checkMcq(actId, correct, sid){
+  initSection(sid);
+  const sel = document.querySelector('#'+actId+' .mcq-opt.selected');
+  const fb = document.getElementById('fb-'+actId);
+  if(!sel){ fb.className='feedback warn'; fb.innerHTML='⚠️ Selecciona una resposta abans de comprovar.'; return; }
+  const opts = document.querySelectorAll('#'+actId+' .mcq-opt');
+  opts.forEach(o=>{
+    if(o.dataset.val===correct) o.classList.add('reveal-correct');
+    if(o.classList.contains('selected') && o.dataset.val!==correct) o.classList.add('wrong');
+    if(o.classList.contains('selected') && o.dataset.val===correct) { o.classList.remove('reveal-correct'); o.classList.add('correct'); }
+    o.onclick=null;
+  });
+  if(sel.dataset.val===correct){
+    fb.className='feedback ok'; fb.innerHTML='✅ <strong>Correcte!</strong> Molt bé.';
+    markDone(actId, sid);
+  } else {
+    fb.className='feedback err'; fb.innerHTML='❌ <strong>Incorrecte.</strong> La resposta correcta és la que apareix ressaltada en verd.';
+  }
+  document.querySelector('#'+actId+' .check-btn').disabled=true;
+}
+
+// ---- T/F ----
+function selectTf(el, actId){
+  if(document.getElementById('fb-'+actId).classList.contains('ok')) return;
+  const btns = el.closest('.tf-btns').querySelectorAll('.tf-btn');
+  btns.forEach(b=>{ b.classList.remove('selected-true','selected-false'); });
+  el.classList.add(el.dataset.val==='true'?'selected-true':'selected-false');
+  el.dataset.selected='yes';
+}
+function checkTf(actId, correct, explanation, sid){
+  initSection(sid);
+  const btns = document.querySelectorAll('#'+actId+' .tf-btn');
+  let sel=null;
+  btns.forEach(b=>{ if(b.dataset.selected==='yes') sel=b; });
+  const fb = document.getElementById('fb-'+actId);
+  if(!sel){ fb.className='feedback warn'; fb.innerHTML='⚠️ Selecciona Vertader o Fals abans de comprovar.'; return; }
+  const isCorrect = (sel.dataset.val==='true') === correct;
+  btns.forEach(b=>{
+    b.onclick=null;
+    if((b.dataset.val==='true')===correct) b.classList.add('correct');
+    else if(b.dataset.selected==='yes') b.classList.add('wrong');
+  });
+  if(isCorrect){
+    fb.className='feedback ok'; fb.innerHTML='✅ <strong>Correcte!</strong> '+explanation;
+    markDone(actId,sid);
+  } else {
+    fb.className='feedback err'; fb.innerHTML='❌ <strong>Incorrecte.</strong> '+explanation;
+  }
+  document.querySelector('#'+actId+' .check-btn').disabled=true;
+}
+
+// ---- MATCH ----
+function matchClick(el, actId){
+  if(el.classList.contains('dim')||el.classList.contains('paired-ok')) return;
+  if(!matchState[actId]) matchState[actId]={sel:null,pairs:0,total:4};
+  const ms = matchState[actId];
+  const fb = document.getElementById('fb-'+actId);
+  if(!ms.sel){
+    document.querySelectorAll('#'+actId+' .match-item.selected').forEach(e=>e.classList.remove('selected'));
+    el.classList.add('selected'); ms.sel=el;
+  } else {
+    const prev=ms.sel;
+    if(prev===el){ el.classList.remove('selected'); ms.sel=null; return; }
+    // must pick from opposite column
+    const prevSide = prev.closest('[id^=mc-]').id.includes('-L')?'L':'R';
+    const curSide = el.closest('[id^=mc-]').id.includes('-L')?'L':'R';
+    if(prevSide===curSide){ prev.classList.remove('selected'); el.classList.add('selected'); ms.sel=el; return; }
+    const lEl = prevSide==='L'?prev:el;
+    const rEl = prevSide==='R'?prev:el;
+    const lNum = lEl.dataset.id.replace('L','');
+    const rNum = rEl.dataset.id.replace('R','');
+    prev.classList.remove('selected'); ms.sel=null;
+    if(lNum===rNum){
+      lEl.classList.add('paired-ok'); rEl.classList.add('paired-ok');
+      ms.pairs++;
+      if(ms.pairs===ms.total){
+        fb.className='feedback ok'; fb.innerHTML='✅ <strong>Excel·lent!</strong> Totes les parelles correctes.';
+        const sid = actId.replace('a-','').replace(/-\d+$/,'');
+        markDone(actId, sid);
+      }
+    } else {
+      lEl.classList.add('paired-err'); rEl.classList.add('paired-err');
+      setTimeout(()=>{ lEl.classList.remove('paired-err'); rEl.classList.remove('paired-err'); },600);
+      fb.className='feedback err'; fb.innerHTML='❌ Aquesta parella no és correcta. Torna-ho a intentar.';
+    }
+  }
+}
+function resetMatch(actId, sid){
+  matchState[actId]={sel:null,pairs:0,total:4};
+  document.querySelectorAll('#'+actId+' .match-item').forEach(e=>{
+    e.classList.remove('selected','paired-ok','paired-err','dim');
+    e.onclick=function(){ matchClick(this,actId); };
+  });
+  const fb=document.getElementById('fb-'+actId); fb.className='feedback'; fb.innerHTML='';
+  if(state[sid]) state[sid].done.delete(actId);
+  updateProgress(sid);
+}
+
+// ---- FILL ----
+function checkFill(actId, answers, sid){
+  initSection(sid);
+  let allOk=true;
+  answers.forEach((ans,i)=>{
+    const inp = document.getElementById('fi-'+actId+'-'+i);
+    if(!inp) return;
+    const val = inp.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const correct = ans.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    // Accept partial match (first 4 chars)
+    const ok = val===correct || val.startsWith(correct.substring(0,Math.min(4,correct.length))) && correct.startsWith(val.substring(0,Math.min(4,val.length)));
+    const strictOk = val===correct;
+    inp.className = strictOk?'fill-input ok':'fill-input err';
+    if(!strictOk) allOk=false;
+  });
+  const fb = document.getElementById('fb-'+actId);
+  if(allOk){
+    fb.className='feedback ok'; fb.innerHTML='✅ <strong>Perfecte!</strong> Tots els espais correctes.';
+    markDone(actId,sid);
+    document.querySelector('#'+actId+' .check-btn').disabled=true;
+  } else {
+    fb.className='feedback err';
+    fb.innerHTML='❌ Algunes respostes no són correctes. Les respostes correctes són: <strong>'+answers.join(', ')+'</strong>';
+  }
+}
+
+// ---- ORDER ----
+function moveUp(btn){
+  const li = btn.closest('.order-item');
+  const prev = li.previousElementSibling;
+  if(prev) li.parentNode.insertBefore(li,prev);
+}
+function moveDown(btn){
+  const li = btn.closest('.order-item');
+  const next = li.nextElementSibling;
+  if(next) li.parentNode.insertBefore(next,li);
+}
+function checkOrder(actId, correct, sid){
+  initSection(sid);
+  const items = document.querySelectorAll('#ol-'+actId.replace('a-','')+' .order-item');
+  let allOk=true;
+  items.forEach((item,pos)=>{
+    const isOk = parseInt(item.dataset.idx)===correct[pos];
+    item.classList.toggle('correct',isOk);
+    item.classList.toggle('wrong',!isOk);
+    if(!isOk) allOk=false;
+  });
+  const fb=document.getElementById('fb-'+actId);
+  if(allOk){
+    fb.className='feedback ok'; fb.innerHTML='✅ <strong>Ordre correcte!</strong> Molt ben fet.';
+    markDone(actId,sid);
+    document.querySelector('#'+actId+' .check-btn').disabled=true;
+  } else {
+    fb.className='feedback err'; fb.innerHTML='❌ L\'ordre no és del tot correcte. Els elements marcats en vermell estan mal col·locats. Torna a intentar-ho.';
+  }
+}
+
+// Fix order list IDs — the ol- id must match
+document.querySelectorAll('.order-list').forEach(ol=>{
+  // ol id is like ol-s21-5, act card id is a-s21-5
+  // checkOrder is called with 'a-s21-5', then does ol-s21-5 by replacing 'a-' with ''
+  // already correct
+});
+
+// ---- DRAG AND DROP ----
+let dragSrc=null;
+document.addEventListener('dragstart',e=>{
+  const li=e.target.closest('.order-item');
+  if(!li) return;
+  dragSrc=li; li.classList.add('dragging');
+});
+document.addEventListener('dragend',e=>{
+  const li=e.target.closest('.order-item');
+  if(li) li.classList.remove('dragging');
+  dragSrc=null;
+});
+document.addEventListener('dragover',e=>{
+  const li=e.target.closest('.order-item');
+  if(!li||!dragSrc||li===dragSrc) return;
+  e.preventDefault();
+  const box=li.getBoundingClientRect();
+  const mid=box.top+box.height/2;
+  if(e.clientY<mid) li.parentNode.insertBefore(dragSrc,li);
+  else li.parentNode.insertBefore(dragSrc,li.nextSibling);
+});
+
+// ---- PROGRESS ----
+function markDone(actId, sid){
+  if(!state[sid]) state[sid]={done:new Set()};
+  state[sid].done.add(actId);
+  updateProgress(sid);
+  if(state[sid].done.size===5){
+    const nb = document.querySelector('.nav-btn[onclick*="\''+sid+'\'"]');
+    if(nb) nb.classList.add('done');
+  }
+}
+function updateProgress(sid){
+  if(!state[sid]) return;
+  const n=state[sid].done.size;
+  const pb=document.getElementById('pb-'+sid);
+  const sc=document.getElementById('sc-'+sid);
+  if(pb) pb.style.width=(n/5*100)+'%';
+  if(sc){
+    sc.textContent=n+' / 5 activitats';
+    sc.className = n===5?'score-badge green':'score-badge';
+  }
+}
+
+// ---- RESET ----
+function resetAct(actId){
+  const card=document.getElementById(actId);
+  // MCQ
+  card.querySelectorAll('.mcq-opt').forEach(o=>{
+    o.classList.remove('selected','correct','wrong','reveal-correct');
+    o.onclick=function(){ selectMcq(this,actId); };
+  });
+  // TF
+  card.querySelectorAll('.tf-btn').forEach(b=>{
+    b.classList.remove('selected-true','selected-false','correct','wrong');
+    delete b.dataset.selected;
+    const v=b.dataset.val;
+    b.onclick=function(){ selectTf(this,actId); };
+  });
+  // Fill
+  card.querySelectorAll('.fill-input').forEach(i=>{ i.value=''; i.className='fill-input'; });
+  // Order
+  card.querySelectorAll('.order-item').forEach(i=>i.classList.remove('correct','wrong'));
+  const fb=document.getElementById('fb-'+actId);
+  fb.className='feedback'; fb.innerHTML='';
+  const cb=card.querySelector('.check-btn');
+  if(cb) cb.disabled=false;
+  const sid = actId.replace('a-','').replace(/-\d+$/,'');
+  if(state[sid]) state[sid].done.delete(actId);
+  updateProgress(sid);
+}
+
+// Fix checkOrder to use correct list ID
+const origCheckOrder = checkOrder;
+</script>
+</body>
+</html>
