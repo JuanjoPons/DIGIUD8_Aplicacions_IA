@@ -65,5 +65,35 @@
   </head>
   <body>
     <div id="root"></div>
+<script>
+  // Afegeix el botó d'Activitats al menú quan React acaba de renderitzar
+  function injectActivitatsBtn() {
+    const nav = document.querySelector('nav');
+    if (!nav) { setTimeout(injectActivitatsBtn, 300); return; }
+    if (document.getElementById('btn-activitats')) return;
+
+    const btn = document.createElement('a');
+    btn.id = 'btn-activitats';
+    btn.href = './activitats.html';
+    btn.innerHTML = `
+      <span style="display:inline-flex;align-items:center;gap:6px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+        </svg>
+        ACTIVITATS
+      </span>`;
+
+    // Copia l'estil de l'últim element del menú
+    const lastItem = nav.querySelector('a:last-child, button:last-child');
+    if (lastItem) {
+      btn.className = lastItem.className;
+    }
+
+    btn.style.cursor = 'pointer';
+    btn.style.textDecoration = 'none';
+    nav.appendChild(btn);
+  }
+  document.addEventListener('DOMContentLoaded', () => setTimeout(injectActivitatsBtn, 500));
+</script>
   </body>
 </html>
